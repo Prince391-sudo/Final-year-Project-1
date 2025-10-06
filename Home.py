@@ -5,7 +5,7 @@ from datetime import datetime
 # 🧭 Page Configuration
 st.set_page_config(page_title="MSME BI App", page_icon="💼", layout="wide")
 
-# 🎨 Enhanced Styling
+# 🎨 Styling
 st.markdown("""
     <style>
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: #0b0c10; color: #f8f9fa; }
@@ -40,46 +40,27 @@ if "authenticated" not in st.session_state:
 if "username" not in st.session_state:
     st.session_state["username"] = ""
 
-# ✨ LOGIN & SIGN-UP PAGE
+# ✨ LOGIN PAGE
 if not st.session_state["authenticated"]:
     st.markdown("<h1 class='main-title'>💼 MSME BI Dashboard</h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-title'>Empowering Small Businesses with Data-driven Insights</p>", unsafe_allow_html=True)
 
-    option = st.radio("Select an Option", ["Login", "Sign Up", "Google Login"])
+    username = st.text_input("👤 Username")
+    password = st.text_input("🔑 Password", type="password")
 
-    if option == "Login":
-        username = st.text_input("👤 Username")
-        password = st.text_input("🔑 Password", type="password")
-        if st.button("Login"):
-            if username and password:
-                st.session_state["authenticated"] = True
-                st.session_state["username"] = username
-                st.success(f"✅ Welcome, {username}!")
-                st.rerun()
-            else:
-                st.error("❌ Please enter both username and password.")
+    if st.button("Login"):
+        if username and password:
+            st.session_state["authenticated"] = True
+            st.session_state["username"] = username
+            st.success(f"✅ Welcome, {username}!")
+            st.rerun()
+        else:
+            st.error("❌ Please enter both username and password.")
 
-    elif option == "Sign Up":
-        new_user = st.text_input("👤 Choose Username")
-        new_pass = st.text_input("🔑 Choose Password", type="password")
-        confirm_pass = st.text_input("🔁 Confirm Password", type="password")
-        if st.button("Create Account"):
-            if new_user and new_pass == confirm_pass:
-                st.success("✅ Account created successfully! You can now login.")
-            else:
-                st.error("❌ Please check your input fields.")
-
-    elif option == "Google Login":
-        st.markdown("👉 [Login with Google](https://accounts.google.com/signin) *(demo link)*")
-        st.info("⚙️ Integrate Firebase or OAuth for real Google authentication.")
-
-    # 🌟 Random Quote
     quotes = [
         "“Small businesses are the backbone of innovation.”",
         "“Empowering MSMEs means empowering the future.”",
-        "“Every big idea starts small — and data helps it grow.”",
-        "“Insight turns opportunity into success.”",
-        "“Data-driven MSMEs outperform intuition-driven ones.”"
+        "“Every big idea starts small — and data helps it grow.”"
     ]
     st.markdown(f"<p class='quote'>{random.choice(quotes)}</p>", unsafe_allow_html=True)
 
@@ -89,14 +70,16 @@ else:
     st.markdown("<p class='sub-title'>Here’s your business intelligence workspace.</p>", unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
+
     with col1:
         st.markdown("""
             <div class='card'>
-                <h3>AI Predictive</h3>
+                <h3>🤖 AI Predictive</h3>
                 <p>Upload your MSME datasets and clean them for analysis.</p>
             </div>
         """, unsafe_allow_html=True)
-        st.button("Go to Upload Page")
+        if st.button("Go to Upload Page"):
+            st.switch_page("pages/Upload.py")
 
     with col2:
         st.markdown("""
@@ -105,7 +88,8 @@ else:
                 <p>Visualize trends and gain insights using interactive charts.</p>
             </div>
         """, unsafe_allow_html=True)
-        st.button("Go to Dashboard")
+        if st.button("Go to Dashboard"):
+            st.switch_page("pages/Dashboard.py")
 
     with col3:
         st.markdown("""
@@ -114,18 +98,33 @@ else:
                 <p>Generate professional PDF reports and download insights easily.</p>
             </div>
         """, unsafe_allow_html=True)
-        st.button("Go to Reports")
+        if st.button("Go to Reports"):
+            st.switch_page("pages/Reports.py")
+
+    st.markdown("---")
+
+    st.markdown("""
+        <div class='card'>
+            <h3>🧭 Admin Panel</h3>
+            <p>Manage users and monitor analytics performance.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    if st.button("Go to Admin Page"):
+        st.switch_page("pages/Admin.py")
 
     # 🕒 Footer Section
-    st.markdown("""
+    st.markdown(f"""
         <footer>
             <hr>
             <p>© 2025 MSME BI Dashboard | Empowering Small Businesses with Smart Data Insights</p>
-            <p>Last Login: {}</p>
+            <p>Last Login: {datetime.now().strftime("%B %d, %Y %H:%M:%S")}</p>
         </footer>
-    """.format(datetime.now().strftime("%B %d, %Y %H:%M:%S")), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    # 🚪 Logout Button
+    if st.button("Logout"):
+        st.session_state.clear()
+        st.rerun()
+
     if st.button("Logout"):
         st.session_state["authenticated"] = False
         st.session_state["username"] = ""
